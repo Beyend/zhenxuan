@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>所有商品</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+		<style>
+			.layui-table-cell {
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>所有商品</legend>
+			</fieldset>
+			<!--<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">商品类型</label>
+						<div class="layui-input-inline">
+							<select name="quiz" lay-filter="type">
+								<option value=""></option>
+								<option value="1">单件商品</option>
+								<option value="2">组合商品</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="layui-inline">
+						<label class="layui-form-label">商品名称</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="请输入作品名称" class="layui-input product_name" onblur="getProList();">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">商品分类</label>
+						<div class="layui-input-inline">
+							<select name="quiz" lay-filter="type2" id="xiala1">
+								<option value="">请选择商品分类</option>
+
+							</select>
+						</div>
+					</div>
+				</div>
+
+			</form>-->
+			<table id="demo" lay-filter="test"></table>
+			<div id="test1"></div>
+			<script type="text/html" id="toolbarDemo">
+				<div class="layui-btn-container">
+					<button class="layui-btn layui-btn-sm" lay-event="down">下架</button>
+				</div>
+			</script>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layui/layui.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script type="text/html" id="barDemo">
+
+				{{# if (d.isdelete=== "N") { }}
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">下架</a>
+				{{# } }} {{# if (d.isdelete=== "Y") { }}
+				<a class="layui-btn  layui-btn-xs layui-btn-normal " lay-event="no">上架</a>
+
+				{{# } }} {{# if (d.tuijian=== "0") { }}
+				<a class="layui-btn layui-btn-xs" lay-event="edit">设为推荐</a>
+				{{# } }} {{# if (d.tuijian=== "1") { }}
+				<a class="layui-btn layui-btn-xs" lay-event="tuijian">取消推荐</a>
+				{{# } }} {{# if (d.type=== "1") { }}
+				<a class="layui-btn layui-btn-xs" lay-event="miaosha">设为秒杀商品</a>
+
+				{{# } }} {{# if (d.type=== "2") { }}
+				<a class="layui-btn layui-btn-xs" lay-event="quxiao">取消秒杀商品</a>
+				<a class="layui-btn layui-btn-xs" lay-event="top">置顶秒杀商品</a>
+
+				{{# } }}
+
+			</script>
+			<script type="text/html" id="barDemo1">
+				<a class="layui-btn layui-btn-xs" lay-event="tupian">查看图片</a>
+			</script>
+			<script type="text/html" id="barDemo3">
+				{{# if (d.type=== "1") { }}
+				<div>普通商品</div>
+
+				{{# } }} {{# if (d.type=== "2") { }}
+				<div>秒杀商品</div>
+				{{# } }}
+			</script>
+			<script>
+				var list;
+				var shopid;
+				var form;
+				var laypage;
+				var element;
+				$(function() {
+					shopid = getQueryString("shopid");
+					layui.use(['form', 'laypage', 'element'], function() {
+						form = layui.form;
+						laypage = layui.laypage;
+						element = layui.element //元素操作
+						getProList();
+						form.on('select(type)', function(data) {
+							pro_status = data.value;
+							getProList(type_id, pro_status);
+						});
+						form.on('select(type2)', function(data) {
+							type_id = data.value;
+
+							getProList(type_id, pro_status);
+						});
+						$.ajax({
+							url: baseurl + '/type/getTypeList',
+							dataType: 'json',
+							type: 'post',
+							data: {},
+							success: function(data) {
+								$.each(data.data, function(index, item) {
+									$('#xiala1').append(new Option(item.type_name, item.type_id)); // 下拉菜单里添加元素
+								})
+								form.render(); //下拉菜单渲染 把内容加载进去
+							}
+						});
+					})
+
+				})
+
+				function getProList() {
+					$.ajax({
+						type: "POST", //提交方式 
+						url: baseurl + "/goods/getgoodslist", //路径 
+						dataType: 'json',
+						data: {
+							shopid: shopid,
+
+						}, //数据，这里使用的是Json格式进行传输 
+						success: function(data) { //返回数据根据结果进行相应的处理 
+							console.log(data.data.list);
+							list = data.data.data;
+							layui.use('table', function() {
+								var table = layui.table;
+								//第一个实例
+								table.render({
+									elem: '#demo',
+									id: 'testReload',
+									data: list, //数据接口
+									cols: [
+										[{
+											field: 'goodsid',
+											title: 'ID',
+											width: 200,
+
+										}, {
+											field: 'goodsname',
+											title: '商品名称',
+											width: 100
+										}, {
+											field: 'price',
+											title: '价格',
+											width: 80
+										}, {
+											field: 'goodslogo',
+											title: '商品LOGO',
+											width: 150,
+											templet: '#barDemo1',
+											event: 'chakan'
+										}, {
+											field: 'introduce',
+											title: '商品描述',
+											width: 200,
+
+										}, {
+											field: 'classbname',
+											title: '商品分类',
+											width: 90,
+
+										}, {
+											field: 'num',
+											title: '商品允许最大购买量',
+											width: 80,
+
+										}, {
+											field: 'type',
+											title: '商品类型',
+											width: 120,
+											templet: '#barDemo3',
+										}, {
+											field: 'toplevel',
+											title: '商品置顶位置',
+											width: 50
+
+										}, {
+											field: 'addtime',
+											title: '添加时间',
+											width: 170
+										}, {
+											title: '操作',
+											width: 330,
+											toolbar: '#barDemo'
+										}]
+									]
+								});
+								//监听Tab切换
+								element.on('tab(demo)', function(data) {
+									layer.tips('切换了 ' + data.index + '：' + this.innerHTML, this, {
+										tips: 1
+									});
+								});
+								laypage.render({
+									elem: 'test1',
+									count: data.data.total, //数据总数，从服务端得到
+									jump: function(obj, first) {
+										//obj包含了当前分页的所有参数，比如：
+										console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+										console.log(obj.limit); //得到每页显示的条数
+
+										//首次不执行
+										if(!first) {
+											//do something
+											$.ajax({
+												type: "POST", //提交方式 
+												url: baseurl + "/product/getProList", //路径 
+												dataType: 'json',
+												data: {
+													shopid: shopid,
+													pageNum: obj.curr
+												}, //数据，这里使用的是Json格式进行传输 
+												success: function(data) {
+													if(data.meta.code == 200) {
+														table.reload('testReload', {
+															data: data.data.data
+														});
+													}
+												}
+											})
+										}
+									}
+								});
+
+								table.on('tool(test)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+									var data = obj.data; //获得当前行数据
+									var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+									var tr = obj.tr; //获得当前行 tr 的DOM对象
+									var goodsid = obj.data.goodsid;
+									var goodslogo = obj.data.goodslogo;
+									if(layEvent === 'del') { //删除
+
+										layer.confirm('真的下架此商品吗', function(index) {
+											$.ajax({
+												type: "POST", //提交方式 
+												url: baseurl + "/goods/downgoods", //路径 
+												dataType: 'json',
+												data: {
+													goodsid: goodsid,
+												}, //数据，这里使用的是Json格式进行传输 
+												success: function(data) { //返回数据根据结果进行相应的处理 
+													console.log(data.meta.code);
+													if(data.meta.code == 200) {
+														layer.msg('下架成功', {
+															icon: 1
+														});
+														getProList() 
+													} else {
+														layer.msg('下架失败！', {
+															icon: 5
+														});
+													}
+												}
+											})
+											layer.close(index);
+										});
+									}  else if(layEvent === 'on') {
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/goods/upgoods", //路径 
+											dataType: 'json',
+											data: {
+												goodsid: goodsid,
+											}, //数据，这里使用的是Json格式进行传输 
+											success: function(data) { //返回数据根据结果进行相应的处理 
+												console.log(data.meta.code);
+												if(data.meta.code == 200) {
+													layer.msg('上架成功', {
+														icon: 1
+													});
+													getProList() 
+												} else {
+													layer.msg('上架失败！', {
+														icon: 5
+													});
+												}
+											}
+										})
+
+									} else if(layEvent === 'edit') {
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/goods/settuijian", //路径 
+											dataType: 'json',
+											data: {
+												goodsid: goodsid,
+											}, //数据，这里使用的是Json格式进行传输 
+											success: function(data) { //返回数据根据结果进行相应的处理 
+												console.log(data.meta.code);
+												if(data.meta.code == 200) {
+													layer.msg('设置推荐成功', {
+														icon: 1
+													});
+													getProList() 
+												} else {
+													layer.msg('设置推荐失败！', {
+														icon: 5
+													});
+												}
+											}
+										})
+
+									} else if(layEvent === 'tuijian') {
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/goods/cancletuijian", //路径 
+											dataType: 'json',
+											data: {
+												goodsid: goodsid,
+											}, //数据，这里使用的是Json格式进行传输 
+											success: function(data) { //返回数据根据结果进行相应的处理 
+												console.log(data.meta.code);
+												if(data.meta.code == 200) {
+													layer.msg('取消推荐成功', {
+														icon: 1
+													});
+													getProList() 
+												} else {
+													layer.msg('取消推荐失败！', {
+														icon: 5
+													});
+												}
+											}
+										})
+
+									} else if(layEvent === 'miaosha') {
+										layer.open({
+											type: 2,
+											title: '设置秒杀价格',
+											maxmin: true,
+											shadeClose: true, //点击遮罩关闭层
+											area: ['500px', '500px'],
+											content: 'miaosha.html?goodsid=' + goodsid,
+											cancel: function() {
+												//右上角关闭回调
+												getProList()
+											}
+										});
+										
+
+									} else if(layEvent === 'quxiao') {
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/goods/canclemiaosha", //路径 
+											dataType: 'json',
+											data: {
+												goodsid: goodsid,
+											}, //数据，这里使用的是Json格式进行传输 
+											success: function(data) { //返回数据根据结果进行相应的处理 
+												console.log(data.meta.code);
+												if(data.meta.code == 200) {
+													layer.msg('取消秒杀成功', {
+														icon: 1
+													});
+													getProList() 
+												} else {
+													layer.msg('取消秒杀失败！', {
+														icon: 5
+													});
+												}
+											}
+										})
+
+									} else if(layEvent === 'top') {
+										layer.open({
+											type: 2,
+											title: '设置商品置顶位置',
+											maxmin: true,
+											shadeClose: true, //点击遮罩关闭层
+											area: ['600px', '500px'],
+											content: 'level.html?goodsid=' + goodsid,
+											cancel: function() {
+												//右上角关闭回调
+												getProList()
+											}
+										});
+
+									}else if(layEvent === 'tupian') {
+										layer.open({
+											type: 2,
+											title: '查看图片',
+											maxmin: true,
+											shadeClose: true, //点击遮罩关闭层
+											area: ['500px', '500px'],
+											content: 'chakan.html?goodslogo=' + goodslogo,
+											cancel: function() {
+												//右上角关闭回调
+												getProList()
+											}
+										});
+										
+
+									} 
+								});
+
+								table.on('toolbar(test)', function(obj) {
+									var checkStatus = table.checkStatus(obj.config.id);
+									switch(obj.event) {
+										case 'down':
+											layer.confirm('真的下架此商品吗', function(index) {
+												for(var i = 0; i < checkStatus.data.length; i++) {
+													var aaa = checkStatus.data[i].product_id;
+
+													$.ajax({
+														type: "POST", //提交方式 
+														url: baseurl + "/product/deletePro", //路径 
+														dataType: 'json',
+														data: {
+															product_id: aaa,
+														}, //数据，这里使用的是Json格式进行传输 
+														success: function(data) { //返回数据根据结果进行相应的处理 
+															console.log(data.meta.code);
+															if(data.meta.code == 200) {
+																getProList(type_id, pro_status);
+																layer.msg('下架成功', {
+																	icon: 1
+																});
+															}
+														}
+													})
+													layer.close(index);
+
+												}
+											});
+											break;
+
+									};
+								});
+
+							});
+						}
+					});
+				}
+			</script>
+
+			<script type="text/html" id="barDemo3">
+				{{# if (d.pro_status=== "1") { }}
+				<span>单件商品</span> {{# } else { }}
+
+				<span>组合商品</span> {{# } }}
+			</script>
+
+	</body>
+
+</html>

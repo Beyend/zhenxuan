@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcf.zhenxuan.mapper.ShopMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zcf.zhenxuan.bean.Shop">
+        <result column="shopid" property="shopid"/>
+        <result column="shoplogo" property="shoplogo"/>
+        <result column="shopname" property="shopname"/>
+        <result column="introduce" property="introduce"/>
+        <result column="address" property="address"/>
+        <result column="tel" property="tel"/>
+        <result column="deltime" property="deltime"/>
+        <result column="shopimg" property="shopimg"/>
+        <result column="cityid" property="cityid"/>
+        <result column="attributeid" property="attributeid"/>
+        <result column="isdelete" property="isdelete"/>
+        <result column="username" property="username"/>
+        <result column="addtime" property="addtime"/>
+        <result column="adminid" property="adminid"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        shopid, shoplogo, shopname, introduce, address, tel, deltime, shopimg, cityid, attributeid
+    </sql>
+    <select id="chatlistByuserid" parameterType="java.lang.String" resultMap="BaseResultMap">
+       SELECT  s.*  FROM  shop s WHERE EXISTS(SELECT c.chatid  FROM chat c WHERE c.userid=#{userid} AND c.shopid=s.shopid )
+
+    </select>
+
+</mapper>

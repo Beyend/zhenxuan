@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcf.zhenxuan.mapper.GoodsMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zcf.zhenxuan.bean.Goods">
+        <result column="goodsid" property="goodsid"/>
+        <result column="goodsname" property="goodsname"/>
+        <result column="goodslogo" property="goodslogo"/>
+        <result column="classbid" property="classbid"/>
+        <result column="shopid" property="shopid"/>
+        <result column="introduce" property="introduce"/>
+        <result column="num" property="num"/>
+        <result column="price" property="price"/>
+        <result column="spike" property="spike"/>
+        <result column="type" property="type"/>
+        <result column="top" property="top"/>
+        <result column="toplevel" property="toplevel"/>
+        <result column="isdelete" property="isdelete"/>
+        <result column="addtime" property="addtime"/>
+        <result column="tuijian" property="tuijian"/>
+        <result column="paynum" property="paynum"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        goodsid, goodsname, goodslogo, classbid, shopid, introduce, num, price, spike, type, top, toplevel
+    </sql>
+    <select id="getgoodsListbycity" parameterType="String" resultMap="BaseResultMap">
+    SELECT  g.*  FROM goods  g
+    LEFT JOIN  shop s ON  s.shopid=g.shopid
+    WHERE s.cityid=#{cityid}
+    ORDER BY g.addtime  desc
+    </select>
+</mapper>

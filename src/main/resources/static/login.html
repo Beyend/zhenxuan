@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>后台登录</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+
+	<body style="background-color: #ddd;">
+		<form class="layui-form" action="" style="margin-top: 200px;">
+			<div class="login">
+				<div class="layui-form-item">
+					<h2 class="tit">后台登录</h2>
+				</div>
+				<div class="layui-form-item">
+					<input type="text" id="phone" name="uname" lay-verify="uname" autocomplete="off" placeholder="请输入账号" class="layui-input">
+				</div>
+				<div class="layui-form-item">
+					<input type="password" id="password" name="pass" lay-verify="pass" autocomplete="off" placeholder="请输入密码" class="layui-input">
+				</div>
+				<div class="layui-form-item">
+					<button type="button" class="layui-btn" lay-submit="" lay-filter="login" style="width:100%;">登录</button>
+				</div>
+			</div>
+		</form>
+		<script src="layui/layui.js"></script>
+		<script src="js/common.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+		<script>
+			layui.use('form', function() {
+				var $ = layui.jquery,
+					form = layui.form;
+				form.verify({
+					uname: function(value) {
+						if(value == '') {
+							return '用户名不能为空';
+						}
+					},
+					pass: function(value) {
+						if(value == '') {
+							return '密码不能为空';
+						}
+					}
+				});
+				$(".layui-btn").click(function() {
+					var phone = $("#phone").val();
+					var password = $("#password").val();
+					if($.trim(phone) != "" && $.trim(password) != "") {
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/admin/loginadmin", //路径 
+							dataType: 'json',
+							data: {
+								account: phone,
+								pwd: password
+							}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) { //返回数据根据结果进行相应的处理 
+
+								if(data.meta.code == 777) {
+									layer.msg('账号不存在！', {
+										icon: 5
+									});
+								} else if(data.meta.code == 555) {
+									layer.msg('密码不正确!', {
+										icon: 5
+									});
+								} else {
+									localStorage.clear();
+									localStorage.setItem("userName", data.data.username)
+									localStorage.setItem("adminid", data.data.adminid)
+									localStorage.setItem("cityid", data.data.cityid)
+									if(data.data.type == '0') {
+										window.location.href = "index.html";
+									} else if(data.data.type == '1') {
+										window.location.href = "index1.html";
+									} else {
+										window.location.href = "index2.html";
+									}
+
+								}
+							}
+						});
+					}
+
+				})
+			});
+		</script>
+	</body>
+
+</html>

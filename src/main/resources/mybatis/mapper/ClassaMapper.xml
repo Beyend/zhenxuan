@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcf.zhenxuan.mapper.ClassaMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zcf.zhenxuan.bean.Classa">
+        <result column="classaid" property="classaid" />
+        <result column="classaname" property="classaname" />
+        <result column="addtime" property="addtime" />
+        <result column="attributeid" property="attributeid" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        classaid, classaname, addtime, shopid
+    </sql>
+
+</mapper>

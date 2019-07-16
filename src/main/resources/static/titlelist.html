@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>秒杀标题列表</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>秒杀标题列表</legend>
+			</fieldset>
+			<table class="layui-hide" id="test" lay-filter="demo"></table>
+			<div id="test1"></div>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layui/layui.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+			</script>
+
+			<script>
+				var list;
+				var laypage;
+				var layer;
+				var form;
+				$(function() {
+					layui.use(['form', 'layer', 'laypage'],
+						function() {
+							form = layui.form;
+							layer = layui.layer;
+							laypage = layui.laypage;
+							topForum();
+						})
+
+				})
+
+				function topForum() {
+					$.ajax({
+						type: "POST", //提交方式 
+						url: baseurl + "/title/gettitlelist", //路径
+						dataType: 'json',
+						success: function(data) { //返回数据根据结果进行相应的处理
+                            list = data.data;
+							console.log(list);
+							layui.use('table', function() {
+								var table = layui.table;
+								//第一个实例
+								table.render({
+									elem: '#test',
+									id: 'testReload',
+                                    data: list, //数据接口
+									align: 'center',
+									cols: [
+										[{
+											field: 'titleid',
+											title: 'ID',
+											width: 220,
+											align: 'center'
+										}, {
+											field: 'content',
+											title: '内容',
+											width: 180,
+											align: 'center'
+
+										}, {
+											field: 'addtime',
+											title: '添加时间',
+											width: 200,
+											align: 'center'
+										}, {
+											title: '操作',
+											width: 120,
+											align: 'center',
+											toolbar: '#barDemo'
+										}]
+									]
+								});
+
+								table.on('tool(demo)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+									var data = obj.data; //获得当前行数据
+									var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+									var tr = obj.tr; //获得当前行 tr 的DOM对象
+									var titleid = obj.data.titleid;
+									if(layEvent === 'del') { //删除
+										layer.confirm('确定要删除吗',
+											function(index) {
+												$.ajax({
+													type: "POST", //提交方式 
+													url: baseurl + "/title/deletetitle", //路径
+													dataType: 'json',
+													data: {
+                                                        titleid: titleid,
+													}, //数据，这里使用的是Json格式进行传输 
+													success: function(data) { //返回数据根据结果进行相应的处理 
+														console.log(data.meta.code);
+														if(data.meta.code == 200) {
+															layer.msg('删除成功', {
+																icon: 1
+															});
+															obj.del();
+														} else if(data.meta.code == 500) {
+															layer.msg('删除失败', {
+																icon: 5
+															});
+														}
+													}
+												})
+											})
+
+									} else if(layEvent === 'edit') {
+										layer.open({
+											type: 2,
+											title: '查看秒杀详情',
+											maxmin: true,
+											shadeClose: true, //点击遮罩关闭层
+											area: ['700px', '600px'],
+											content: 'titleinfo.html?titleid=' + titleid,
+											cancel: function() {
+												//右上角关闭回调
+                                                topForum();
+											}
+										});
+									}
+								});
+							});
+						}
+					});
+				}
+			</script>
+
+	</body>
+
+</html>

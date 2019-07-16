@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>签到中奖记录</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+		<style>
+			.layui-table-cell {
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>签到中奖记录</legend>
+			</fieldset>
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">年月选择器</label>
+						<div class="layui-input-inline">
+							<input type="text" class="layui-input" id="test3" placeholder="请选择月份">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label" style=" margin-left: -10px;width: 200px;">选择中奖类型</label>
+						<div class="layui-input-inline">
+							<select name="quiz" lay-filter="type2" id="xiala2">
+								<option value=""></option>
+								<option value="1">连续签到7天</option>
+								<option value="2">连需签到14天</option>
+								<option value="3">连需签到21天</option>
+								<option value="4">连需签到28天</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+			</form>
+			<table id="demo" lay-filter="test"></table>
+			<div id="test1"></div>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layui/layui.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script type="text/html" id="barDemo">
+				{{# if (d.isdelete=== "N") { }}
+				<a class="layui-btn layui-btn-danger layui-btn-xs layui-btn-normal " lay-event="is">下架</a>
+
+				{{# } }} {{# if (d.isdelete=== "Y") { }}
+				<a class="layui-btn  layui-btn-xs layui-btn-normal " lay-event="no">上架</a>
+
+				{{# } }}
+				<a class="layui-btn layui-btn-xs layui-btn-primary " lay-event="good">查看商品</a>
+			</script>
+
+			<script type="text/html" id="barDemo1">
+				<div>{{d.user.phone}}</div>
+			</script>
+			<script type="text/html" id="barDemo2">
+				{{d.user.username}}
+			</script>
+			<script type="text/html" id="barDemo3">
+				{{d.settings.liwu}}
+
+			</script>
+			<script type="text/html" id="barDemo4">
+				{{# if (d.settings.type=== "1") { }}
+				<div>连续签到7天</div>
+				{{# } }} {{# if (d.settings.type=== "2") { }}
+				<div>连续签到14天</div>
+				{{# } }} {{# if (d.settings.type=== "3") { }}
+				<div>连续签到21天</div>
+				{{# } }} {{# if (d.settings.type=== "4") { }}
+				<div>连续签到28天</div>
+				{{# } }}
+			</script>
+			<script>
+				var list;
+				var laypage;
+				var cityid;
+				var form;
+				var type;
+				$(function() {
+					layui.use(['form', 'laypage', 'laydate'], function() {
+						var laydate = layui.laydate;
+						form = layui.form;
+						laypage = layui.laypage;
+						userlist();
+						//年月选择器
+						laydate.render({
+							elem: '#test3',
+							type: 'month',
+							done: function(value, date, endDate) {
+								userlist(value);
+							}
+						});
+
+						form.on('select(type2)', function(data) {
+							type = data.value;
+							userlist();
+						});
+
+					})
+
+				})
+
+				function userlist(value) {
+					$.ajax({
+						type: "POST", //提交方式 
+						url: baseurl + "/liwulog/getLiwuloglist", //路径 
+						dataType: 'json',
+						data: {
+							type: type,
+							month: value,
+						}, //数据，这里使用的是Json格式进行传输 
+						success: function(data) { //返回数据根据结果进行相应的处理 
+							console.log(data.data);
+							list = data.data.data;
+							layui.use('table', function() {
+								var table = layui.table;
+								//第一个实例
+								table.render({
+									elem: '#demo',
+									id: 'testReload',
+									data: list, //数据接口
+									limit: 10,
+									limits: [10],
+									cols: [
+										[{
+												field: 'userid',
+												title: '用户id',
+												width: 200,
+
+											}, {
+												field: 'phone',
+												title: '手机号',
+												width: 150,
+												templet: '#barDemo1',
+											}, {
+												field: 'username',
+												title: '用户名',
+												width: 150,
+												templet: '#barDemo2',
+
+											}, {
+												field: 'zhongjiangmongth',
+												title: '中奖月份',
+												width: 190
+											}, {
+												field: 'liwu',
+												title: '中奖礼物',
+												width: 190,
+												templet: '#barDemo3',
+											},
+											{
+												field: 'lianxi',
+												title: '姓名',
+												width: 190,
+											}, {
+												field: 'tel',
+												title: '电话',
+												width: 190,
+											}, {
+												field: 'type',
+												title: '中奖类型',
+												width: 150,
+												templet: '#barDemo4',
+											}
+										]
+									]
+								});
+								laypage.render({
+									elem: 'test1' //注意，这里的 test1 是 ID，不用加 # 号
+										,
+									count: data.data.total, //数据总数，从服务端得到
+									jump: function(obj, first) {
+										//obj包含了当前分页的所有参数，比如：
+										console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+										console.log(obj.limit); //得到每页显示的条数
+
+										//首次不执行
+										if(!first) {
+											//do something
+											$.ajax({
+												type: "POST", //提交方式 
+												url: baseurl + "/user/getuserlistbycity", //路径 
+												dataType: 'json',
+												data: {
+													cityid: cityid,
+													pageNum: obj.curr
+												}, //数据，这里使用的是Json格式进行传输 
+												success: function(data) {
+													if(data.meta.code == 200) {
+														table.reload('testReload', {
+															data: data.data.data
+														});
+													}
+												}
+											})
+										}
+									}
+								});
+								table.on('tool(test)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+									var data = obj.data; //获得当前行数据
+									var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+									var tr = obj.tr; //获得当前行 tr 的DOM对象
+									var shopid = obj.data.shopid;
+									var shoplogo = obj.data.shoplogo;
+									if(layEvent === 'is') { //删除
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/shop/deleteshop", //路径 
+											dataType: 'json',
+											data: {
+												shopid: shopid
+											},
+											success: function(data) { //返回数据根据结果进行相应的处理 
+												if(data.meta.code == 200) {
+													layer.msg('下架成功', {
+														icon: 1
+													});
+													userlist(cityid)
+												} else {
+													layer.msg('下架失败！', {
+														icon: 5
+													});
+												}
+											}
+										});
+
+									} else if(layEvent === 'aaaa') {
+										layer.photos({
+											photos: {
+												"data": [ //相册包含的图片，数组格式
+													{
+														"alt": "用户头像",
+														"pid": 666, //图片id
+														"src": shoplogo, //原图地址
+														"thumb": shoplogo //缩略图地址
+													}
+												],
+											},
+											anim: 3 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+										});
+									} else if(layEvent === 'no') {
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/shop/upshop", //路径 
+											dataType: 'json',
+											data: {
+												shopid: shopid
+											},
+											success: function(data) { //返回数据根据结果进行相应的处理 
+												if(data.meta.code == 200) {
+													layer.msg('上架成功', {
+														icon: 1
+													});
+													userlist(cityid)
+												} else {
+													layer.msg('上架失败！', {
+														icon: 5
+													});
+												}
+											}
+										})
+
+									} else if(layEvent === 'good') {
+										layer.open({
+											type: 2,
+											title: '查看商品列表',
+											maxmin: true,
+											shadeClose: true, //点击遮罩关闭层
+											area: ['1200px', '800px'],
+											content: 'productlist.html?shopid=' + shopid,
+											cancel: function() {
+												//右上角关闭回调
+												userlist(cityid)
+											}
+										});
+									}
+								});
+							})
+						}
+					});
+				}
+			</script>
+
+	</body>
+
+</html>

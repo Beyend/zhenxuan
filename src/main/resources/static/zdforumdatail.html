@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>帖子详情</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+		<style>
+			.sp {
+				width: 150px;
+				height: 150px;
+			}
+			
+			.tp {
+				width: 100px;
+				height: 100px;
+			}
+			
+			.layui-table-cell {
+				height: auto;
+			}
+			.noOb {
+				display: block;
+				width: 80%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>帖子详情</legend>
+			</fieldset>
+			<form class="layui-form">
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">帖子标题</label>
+					<div class="layui-input-block">
+						<input type="text" autocomplete="off" placeholder="" class="layui-input forum_name">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">帖子内容</label>
+					<div class="layui-input-block ">
+						<div class="content" contenteditable="true" style="width: 500px;min-height: 500px;border: 1px  solid gainsboro;height: auto;"></div>
+					</div>
+				</div>
+
+				<div class="layui-form-item tupian" style="display: none;">
+					<label class="layui-form-label"></label>
+					<!--<div class="layui-inline tp" style="">
+						<img style="width: 100px;height: 100px;" />
+					</div>
+					<div class="layui-inline tp" style="">
+						<img style="width: 100px;height: 100px;" />
+					</div>
+					<div class="layui-inline sp">
+						<video style="width: 150px;height: 150px;" />
+					</div>-->
+				</div>
+
+				<!--<div class="layui-form-item">
+
+					<div class="layui-inline">
+						<label class="layui-form-label">打赏金币</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input reward">
+						</div>
+					</div>
+				</div>-->
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">点赞数</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input zan">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label" style="width: 100px;margin-left: -22px;">是否允许评论</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input dis_type">
+						</div>
+					</div>
+				</div>
+			</form>
+			<table class="layui-hide" id="test" lay-filter="demo"></table>
+			<div id="test1"></div>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layui/layui.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="refuse">删除</a>
+			</script>
+			<script type="text/html" id="barDemo2">
+				<img src="{{d.head_img}}" />
+			</script>
+			<script>
+				var laypage;
+				var status;
+				$(function() {
+					var forum_id = getQueryString("forum_id");
+					layui.use(['form', 'layer', 'laypage'],
+						function() {
+							var form = layui.form;
+							layer = layui.layer;
+							laypage = layui.laypage;
+							$.ajax({
+								type: "POST", //提交方式 
+								url: baseurl + "/air/forumdetail", //路径 
+								dataType: 'json',
+								data: {
+									forum_id: forum_id,
+								}, //数据，这里使用的是Json格式进行传输 
+								success: function(data) {
+									if(data.meta.code == 200) {
+										$(".forum_name").val(data.data.forum_name);
+										$(".zan").val(data.data.zan);
+										$(".content").append(data.data.content);
+										if(data.data.dis_type == 'y') {
+											$(".dis_type").val("允许评论");
+										} else if(data.data.dis_type == 'n') {
+											$(".dis_type").val("不允许评论");
+										}
+										console.log(data.data.contents.length);
+										if(data.data.contents.length > 0) {
+											$(".tupian").css("display", "");
+											for(var i = 0; i < data.data.contents.length; i++) {
+
+												if(data.data.contents[i].type == '1') {
+													$(".tupian").append("<div class='layui-inline'><img class='tp' src='" + data.data.contents[i].path + "'/></div>")
+												} else if(data.data.contents[i].type == '3') {
+
+													$(".tupian").append("<div class='layui-inline'><video  class='sp' controls autoplay='autoplay'><source src='" + data.data.contents[i].path + "'  type='video/mp4' ></video></div>")
+												} else {
+													$(".tupian").append("<div class='layui-inline'><audio   class='sp' controls autoplay='autoplay'><source src='" + data.data.contents[i].path + "'  type='audio/mpeg' ></audio></div>")
+												}
+											}
+										}
+
+										$.ajax({
+											type: "POST", //提交方式 
+											url: baseurl + "/air/disdetail", //路径 
+											dataType: 'json',
+											data: {
+												forum_id: forum_id,
+											}, //数据，这里使用的是Json格式进行传输 
+											success: function(data) {
+												if(data.meta.code == 200) {
+													var list = data.data.list;
+													layui.use('table', function() {
+														var table = layui.table;
+														//第一个实例
+														table.render({
+															elem: '#test',
+															id: 'testReload',
+															data: list, //数据接口
+															align: 'center',
+															cols: [
+																[{
+																	field: 'discuss_id',
+																	title: '评论ID',
+																	width: 200,
+																	align: 'center'
+																}, {
+																	field: 'discuss_content',
+																	title: '评论内容',
+																	width: 110,
+																	align: 'center'
+
+																}, {
+																	field: 'user_id',
+																	title: '用户ID',
+																	width: 180,
+																	align: 'center'
+
+																}, {
+																	field: 'nick_name',
+																	title: '用户名',
+																	width: 120,
+																	align: 'center'
+																}, {
+																	field: 'head_img',
+																	title: '用户头像',
+																	width: 120,
+																	align: 'center',
+																	templet: '#barDemo2',
+																	event: 'aaaa'
+																}, {
+																	field: 'addtime',
+																	title: '发布时间',
+																	width: 180,
+																	align: 'center'
+																}, {
+																	title: '操作',
+																	width: 80,
+																	align: 'center',
+																	toolbar: '#barDemo'
+																}]
+															]
+														});
+														laypage.render({
+															elem: 'test1',
+															count: data.data.total, //数据总数，从服务端得到
+															jump: function(obj, first) {
+																//obj包含了当前分页的所有参数，比如：
+																console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+																console.log(obj.limit); //得到每页显示的条数
+																//首次不执行
+																if(!first) {
+																	//do something
+																	$.ajax({
+																		type: "POST", //提交方式 
+																		url: baseurl + "/air/disdetail", //路径 
+																		dataType: 'json',
+																		data: {
+																			forum_id: forum_id,
+																			pageNum: obj.curr
+																		}, //数据，这里使用的是Json格式进行传输 
+																		success: function(data) {
+																			if(data.meta.code == 200) {
+																				table.reload('testReload', {
+																					data: data.data.list
+																				});
+																			}
+																		}
+																	})
+																}
+															}
+														});
+														table.on('tool(demo)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+															var data = obj.data; //获得当前行数据
+															var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+															var tr = obj.tr; //获得当前行 tr 的DOM对象
+															var discuss_id = obj.data.discuss_id;
+															var head_img = obj.data.head_img;
+															if(layEvent === 'refuse') { //删除
+																layer.confirm('确定要删除吗',
+																	function(index) {
+																		$.ajax({
+																			type: "POST", //提交方式 
+																			url: baseurl + "/air/deldis", //路径 
+																			dataType: 'json',
+																			data: {
+																				discuss_id: discuss_id,
+																			}, //数据，这里使用的是Json格式进行传输 
+																			success: function(data) { //返回数据根据结果进行相应的处理 
+																				console.log(data.meta.code);
+																				if(data.meta.code == 200) {
+																					layer.msg('删除成功', {
+																						icon: 1
+																					});
+																					obj.del();
+																				} else if(data.meta.code == 102) {
+																					layer.msg('删除失败', {
+																						icon: 5
+																					});
+																				}
+																			}
+																		})
+																	})
+
+															} else if(layEvent === 'aaaa') {
+																layer.photos({
+																	photos: {
+																		"data": [ //相册包含的图片，数组格式
+																			{
+																				"alt": "用户头像",
+																				"pid": 666, //图片id
+																				"src": head_img, //原图地址
+																				"thumb": head_img //缩略图地址
+																			}
+																		],
+																	},
+																	anim: 3 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+																});
+															}
+														});
+													});
+												}
+
+											}
+
+										})
+									}
+								}
+							})
+
+						})
+
+				})
+			</script>
+
+	</body>
+
+</html>

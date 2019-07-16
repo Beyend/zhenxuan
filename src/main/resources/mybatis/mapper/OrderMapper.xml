@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcf.zhenxuan.mapper.OrderMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zcf.zhenxuan.bean.Order">
+        <result column="orderid" property="orderid"/>
+        <result column="userid" property="userid"/>
+        <result column="shopid" property="shopid"/>
+        <result column="addtime" property="addtime"/>
+        <result column="goodsid" property="goodsid"/>
+        <result column="num" property="num"/>
+        <result column="totalmoney" property="totalmoney"/>
+        <result column="status" property="status"/>
+        <result column="paytime" property="paytime"/>
+        <result column="addressid" property="addressid"/>
+        <result column="paytype" property="paytype"/>
+        <result column="returntype" property="returntype"/>
+        <result column="shopname" property="shopname"/>
+        <result column="shoplogo" property="shoplogo"/>
+        <result column="username" property="username"/>
+        <result column="area" property="area"/>
+        <result column="detailaddress" property="detailaddress"/>
+        <result column="peisongname" property="peisongname"/>
+        <result column="telephone" property="telephone"/>
+        <result column="goodsname" property="goodsname"/>
+        <result column="goodslogo" property="goodslogo"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        orderid, userid, shopid, addtime, goodsid, num, totalmoney, status, paytime
+    </sql>
+    <select id="getordersListbyall" resultMap="BaseResultMap" parameterType="com.zcf.zhenxuan.vo.in.UserParam">
+
+        SELECT o.*,s.shopname,s.shoplogo,u.username,ad.area,ad.detailaddress,ad.username peisongname,ad.telephone,g.goodsname,g.goodslogo
+        FROM orders o
+        LEFT JOIN shop s ON s.shopid=o.shopid
+        LEFT JOIN `user` u ON u.userid=o.userid
+        LEFT JOIN  address  ad  ON  ad.addressid=o.addressid
+        LEFT JOIN  goods  g  ON  o.goodsid=g.goodsid
+        WHERE 1=1
+        <if test="cityid !=null  and  cityid!=''">
+            and s.cityid=#{cityid}
+        </if>
+        <if test="shopid !=null  and  shopid!=''">
+            AND s.shopid=#{shopid}
+        </if>
+        <if test="status !=null  and  status!=''">
+            AND o.`status`=#{status}
+        </if>
+        ORDER BY o.addtime desc
+    </select>
+
+    <select id="getShopTotal" resultType="com.zcf.zhenxuan.vo.out.OrderTotalVo">
+        select sum(num) totalnum,convert(sum(totalmoney),decimal(10,2)) totalmoney
+        from orders
+        where status != 0
+        and shopid = #{shopid}
+        <if test="begDate != null and begDate!= ''">
+          and addtime &gt;= #{begDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+          and addtime &lt;= #{endDate}
+        </if>
+    </select>
+
+    <select id="getShopRefund" resultType="com.zcf.zhenxuan.vo.out.OrderTotalVo">
+        select sum(totalmoney) refund
+        from orders
+        where status = 5
+        and returntype = 1
+        and shopid = #{shopid}
+    </select>
+
+    <select id="getAdminTotal" resultType="com.zcf.zhenxuan.vo.out.OrderTotalVo">
+        select sum(o.num) totalnum,convert(sum(o.totalmoney),decimal(10,2)) totalmoney
+        from orders o
+        left join shop s on o.shopid = s.shopid
+        left join admin a on s.adminid = a.adminid
+        where a.cityid = #{cityid}
+    </select>
+
+</mapper>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>添加轮播图</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>添加轮播图</legend>
+			</fieldset>
+
+			<form class="layui-form" style="margin-top: 100px;">
+				<div class="layui-form-item shangpin">
+					<div class="layui-inline">
+						<label class="layui-form-label">选择商品</label>
+						<div class="layui-input-inline">
+							<select name="modules" lay-verify="required" lay-search="" id="xiala" lay-filter="test">
+								<option value="">请选择商品</option>
+							</select>
+						</div>
+					</div>
+
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">轮播位置</label>
+					<div class="layui-input-block">
+						<input type="number" name="level" lay-verify="required" placeholder="轮播位置（数字）" autocomplete="off" class="layui-input level" style="width: 300px;">
+					</div>
+				</div>
+				<div class="layui-upload img">
+					<button type="button" class="layui-btn" id="test1" style="margin-left: 110px;">上传banner图</button>
+					<div class="layui-upload-list" style="margin-left: 110px;">
+						<img class="layui-upload-img" id="demo1" style="width: 500px;height: 250px;">
+						<p id="demoText"></p>
+					</div>
+				</div>
+
+			</form>
+			<div style="margin-left:300px;margin-top: 50px; ">
+				<button class="layui-btn layui-btn-lg layui-btn-normal" id="save">保存</button>
+			</div>
+		</div>
+		<script type="text/javascript " src="js/jquery.min.js "></script>
+		<script src="js/common.js "></script>
+		<script src="layui/layui.js "></script>
+		<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+		<script>
+			var bannerid;
+			var form;
+			var bannerimg;
+			var upload;
+			var level;
+			var goodsid;
+			$(function() {
+				bannerid = getQueryString("bannerid");
+				layui.use(['element', 'form', "upload"], function() {
+					var $ = layui.jquery,
+						element = layui.element;
+					upload = layui.upload;
+					form = layui.form;
+					$.ajax({
+						type: "POST", //提交方式 
+						url: baseurl + "/goods/getgoodsListbycity", //路径 
+						data: {
+							cityid: localStorage.getItem("cityid")
+						},
+						//数据，这里使用的是Json格式进行传输 
+						success: function(data) { //返回数据根据结果进行相应的处理 
+							list = data.data;
+							$.each(data.data, function(index, item) {
+								$('#xiala').append(new Option(item.goodsname, item.goodsid)); // 下拉菜单里添加元素
+							})
+							form.render(); //下拉菜单渲染 把内容加载进去
+
+						}
+					});
+					form.on('select(test)', function(data) {
+						console.log(data.elem); //得到select原始DOM对象
+						console.log(data.value); //得到被选中的值
+						console.log(data.othis); //得到美化后的DOM对象
+						goodsid = data.value;
+					});
+					//普通图片上传
+					uploadInst = upload.render({
+						elem: '#test1',
+						url: baseurl + "/user/shangchuan",
+						data: {
+
+						},
+						before: function(obj) {
+
+						},
+						choose: function(obj) {
+							//预读本地文件示例，不支持ie8
+							obj.preview(function(index, file, result) {
+								$('#demo1').attr('src', result); //图片链接（base64）
+							});
+						},
+						done: function(res) {
+							//如果上传失败
+							if(res.code > 0) {
+								return layer.msg('上传失败');
+							}
+							console.log(res);
+							//上传成功
+							if(res.meta.code == 200) {
+								bannerimg = res.data
+							}
+						},
+						error: function() {
+							//演示失败状态，并实现重传
+							var demoText = $('#demoText');
+							demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+							demoText.find('.demo-reload').on('click',
+								function() {
+									uploadInst.upload();
+								});
+						}
+					});
+
+				})
+				$("#save").click(function() {
+					$.ajax({
+						type: "POST", //提交方式 
+						url: baseurl + "/banner/addbanner", //路径 
+						data: {
+							cityid: localStorage.getItem("cityid"),
+							bannerimg: bannerimg,
+							goodsid: goodsid,
+							level: $(".level").val()
+						},
+						//数据，这里使用的是Json格式进行传输 
+						success: function(data) { //返回数据根据结果进行相应的处理 
+							if(data.meta.code == 200) {
+								layer.msg('保存成功', {
+									icon: 1
+								});
+								getProList()
+							} else {
+								layer.msg('保存失败！', {
+									icon: 5
+								});
+							}
+
+						}
+					});
+				})
+
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>赚取金币说明</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>赚取金币说明</legend>
+			</fieldset>
+
+			<form class="layui-form" action="">
+				<div class="layui-form-item">
+
+					<div class="layui-form-item layui-form-text">
+
+						<div class="layui-form-item layui-form-text ">
+							<label class="layui-form-label">金币说明</label>
+							<div class="layui-input-block">
+								<textarea placeholder="请输入赚取金币说明" class="layui-textarea content" style="width: 800px;height: auto;min-height: 200px;"></textarea>
+							</div>
+						</div>
+						<div class="layui-form-item layui-form-text ">
+							<label class="layui-form-label" style="width: 95px;margin-left: -15px;">签到积分设置</label>
+							<div class="layui-input-block">
+								<input type="text" autocomplete="off" placeholder="请输入一次签到送多少积分" class="layui-input jifen" style="width: 800px;">
+							</div>
+						</div>
+						<div style=" margin-left: 400px; ">
+							<button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="save"> 保存</button>
+						</div>
+			</form>
+
+			<script src="layui/layui.js "></script>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script>
+				var form;
+
+				$(function() {
+					var user_id = getQueryString("user_id");
+					layui.use(['element', 'form', "upload"], function() {
+						var $ = layui.jquery,
+							element = layui.element;
+						var upload = layui.upload;
+						form = layui.form;
+						//						$.ajax({
+						//							type: "POST", //提交方式 
+						//							url: baseurl + "/user/getjinbi", //路径 
+						//							dataType: 'json',
+						//							data: {}, //数据，这里使用的是Json格式进行传输 
+						//							success: function(data) { //返回数据根据结果进行相应的处理 
+						//								if(data.meta.code == 200) {
+						//									$(".content").val(data.data.content)
+						//								} else {
+						//									layer.msg('获取失败!', {
+						//										icon: 5
+						//									});
+						//								}
+						//							}
+						//						});
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/user/getjifenDetail", //路径 
+							dataType: 'json',
+							data: {}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) { //返回数据根据结果进行相应的处理 
+								if(data.meta.code == 200) {
+									if(data.data.integral != 0) {
+										$(".jifen").val(data.data.integral);
+										$(".content").val(data.data.content)
+									}
+								} else {
+									layer.msg('获取失败!', {
+										icon: 5
+									});
+								}
+							}
+						});
+
+					});
+
+					$("#save").click(function() {
+						if($(".content").val().trim().length < 1) {
+							return layer.msg('说明内容不能为空!', {
+								icon: 5
+							});
+						}
+						if($(".jifen").val().trim().length < 1) {
+							return layer.msg('积分数不能为空!', {
+								icon: 5
+							});
+						}
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/user/setjinbi", //路径 
+							dataType: 'json',
+							data: {
+								content: $(".content").val(),
+							}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) { //返回数据根据结果进行相应的处理 
+								if(data.meta.code == 200) {
+									$.ajax({
+										type: "POST", //提交方式 
+										url: baseurl + "/user/setInte", //路径 
+										dataType: 'json',
+										data: {
+											integral: $(".jifen").val(),
+										}, //数据，这里使用的是Json格式进行传输 
+										success: function(data) { //返回数据根据结果进行相应的处理 
+											if(data.meta.code == 200) {
+
+												layer.msg('修改成功', {
+													icon: 1
+												});
+
+											} else {
+												layer.msg('修改失败，请重新修改!', {
+													icon: 5
+												});
+											}
+										}
+									});
+
+								} else {
+									layer.msg('修改失败，请重新修改!', {
+										icon: 5
+									});
+								}
+							}
+						});
+					})
+
+				})
+			</script>
+	</body>
+
+</html>

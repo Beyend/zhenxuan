@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>统计一览</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>统计一览</legend>
+			</fieldset>
+
+			<div style="padding: 20px; background-color: #F2F2F2;margin-left: 200px;width: 900px;height: 650px;">
+
+				<div class="layui-col-md12">
+					<div class="layui-card">
+						<div class="layui-card-header">
+							当前用户量：<span class="countUserNum" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前VIP户量：<span class="countVipUserNum" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							今日新增用户：<span class="countUserNumToday" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							今日新增VIP用户：<span class="countVipUserNumToday" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前总充值：<span class="countFinaceAll" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							今日充值：<span class="countFinaceAllToday" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前审核通过的作品总数：<span class="totalpass" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前需要购买阅读的作品总数：<span class="buybook" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前需要VIP阅读的作品总数：<span class="vipbook" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前热销书：<span class="buyNum" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+					</div>
+					<div class="layui-card">
+						<div class="layui-card-body">
+							当前人气书：<span class="renqi" style="font-size: 18px;padding-left: 15px;"></span>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script src="js/common.js"></script>
+		<script src="layui/layui.js"></script>
+		<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+		<script>
+			var layer;
+			$(function() {
+				layui.use(['element', 'layer'],
+					function() {
+						var $ = layui.jquery,
+							element = layui.element;
+						layer = layui.layer;
+					});
+				countUserNum();
+				countVipUserNum();
+				countUserNumToday();
+				countVipUserNumToday();
+				countFinaceAll();
+				countFinaceAllToday();
+				totalpass();
+				buybook();
+				vipbook();
+				buyNum();
+				renqi();
+			})
+
+			function countUserNum() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/countUserNum", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".countUserNum").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function countVipUserNum() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/countVipUserNum", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".countVipUserNum").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function countUserNumToday() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/countUserNumToday", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".countUserNumToday").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function countVipUserNumToday() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/countVipUserNumToday", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".countVipUserNumToday").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function countFinaceAll() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/countFinaceAll", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".countFinaceAll").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function countFinaceAllToday() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/countFinaceAllToday", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".countFinaceAllToday").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function totalpass() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/totalpass", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".totalpass").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function buybook() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/buybook", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".buybook").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function vipbook() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/vipbook", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							$(".vipbook").text(data.data);
+						} else {
+
+						}
+					}
+				})
+			}
+
+			function buyNum() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/book/buyNum", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							var list = data.data;
+							if(list.length > 0) {
+								if(list.length < 7) {
+									var bookname = '';
+									for(var i = 0; i < list.length; i++) {
+										bookname = bookname + "   《" + list[i].book_name + "》";
+									}
+									$(".buyNum").text(bookname);
+								} else {
+									var bookname = '';
+									for(var i = 0; i < 6; i++) {
+										bookname = bookname + "   《" + list[i].book_name + "》";
+									}
+									$(".buyNum").text(bookname);
+								}
+							}
+						} else {
+							$(".buyNum").text("暂无");
+						}
+					}
+				})
+			}
+
+			function renqi() {
+				$.ajax({
+					type: "POST", //提交方式					
+					url: baseurl + "/tongji/renqi", //路径
+					dataType: 'json',
+					data: {
+
+					}, //数据，这里使用的是Json格式进行传输 
+					success: function(data) { //返回数据根据结果进行相应的处理 
+						console.log(data.meta.code);
+						if(data.meta.code == 200) {
+							var list = data.data;
+							if(list.length > 0) {
+								if(list.length < 7) {
+									var bookname = '';
+									for(var i = 0; i < list.length; i++) {
+										bookname = bookname + "   《" + list[i].book_name + "》";
+									}
+									$(".renqi").text(bookname);
+								} else {
+									var bookname = '';
+									for(var i = 0; i < 6; i++) {
+										bookname = bookname + "   《" + list[i].book_name + "》";
+									}
+									$(".renqi").text(bookname);
+								}
+							}
+						} else {
+							$(".renqi").text("暂无");
+						}
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

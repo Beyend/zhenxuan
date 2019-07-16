@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		
+			<div style="margin:10px 20px;font-size: 50px;text-align: center; ">
+				商品名称：<span class="product_name"></span>
+			</div>
+			<img class="img" style="width: 300px;height: 300px;padding-left: 20px;margin: auto;display: block;" />
+			<div style="margin:10px 20px;font-size: 50px;text-align: center;">
+				数量：<span class="num"></span>
+			</div>
+		
+		<script src="js/common.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script>
+			var product_id;
+			var num;
+			var order_id;
+			$(function() {
+				product_id = getQueryString("product_id");
+				num = getQueryString("num");
+				order_id = getQueryString("order_id");
+				
+				
+				
+				$(".num").text(num);
+				$.ajax({
+					type: "POST", //提交方式 
+					url: baseurl + "/product/getProDetail", //路径 
+					dataType: 'json',
+					data: {
+						product_id: product_id,
+					}, //数据，这里使用的是Json格式进行传输
+					success: function(data) {
+						if(data.meta.code == 200) {
+							$(".product_name").text(data.data.product_name);
+							$(".img").attr("src", data.data.product_img);
+						}
+
+					}
+				})
+			})
+		</script>
+	</body>
+
+</html>

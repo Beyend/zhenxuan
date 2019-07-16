@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>后台管理系统</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="layui/css/layui.mobile.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header">
+				<div class="layui-logo">51臻选总后台管理</div>
+				<!-- 头部区域（可配合layui已有的水平导航） -->
+
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item">
+						<a href="javascript:;"><span>欢迎</span> <span style=" color: white;" class="userName">贤心</span></a>
+						<dl class="layui-nav-child">
+							<!--<dd>
+								<a class="changeuse">修改资料</a>
+							</dd>-->
+							<dd>
+								<a class="changepwd">修改密码</a>
+							</dd>
+
+						</dl>
+
+					</li>
+					<li class="layui-nav-item">
+						<a href="login.html">退出</a>
+					</li>
+				</ul>
+			</div>
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side-scroll">
+					<ul class="layui-nav layui-nav-tree" lay-filter="test">
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">城市管理</a>
+							<dl class="layui-nav-child">
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="112" data-href="city.html">新增城市</a>
+								</dd>
+
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="113" data-href="citylist.html">城市列表</a>
+								</dd>
+
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">城市合伙人管理</a>
+							<dl class="layui-nav-child">
+
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="117" data-href="admincityadd.html">新增城市合伙人</a>
+								</dd>
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="116" data-href="admincitylist.html">城市合伙人列表</a>
+								</dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a class="side-active" href="javascript:;" data-id="12" data-href="user.html">所有用户</a>
+
+						</li>
+						<li class="layui-nav-item">
+							<a class="side-active" href="javascript:;" data-id="13" data-href="shop.html">所有商家</a>
+
+						</li>
+						<li class="layui-nav-item">
+							<a class="side-active" href="javascript:;" data-id="111" data-href="orderllist.html">订单管理</a>
+
+						</li>
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">签到设置</a>
+							<dl class="layui-nav-child">
+
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="777" data-href="sign.html">签到礼物设置</a>
+								</dd>
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="888" data-href="liwulog.html">签到中奖记录</a>
+								</dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">分类管理</a>
+							<dl class="layui-nav-child">
+
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="122" data-href="fenlei.html">分类设置</a>
+								</dd>
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="123" data-href="fenleilist.html">一级分类</a>
+								</dd>
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="124" data-href="fenleilist2.html">二级分类</a>
+								</dd>
+							</dl>
+						</li>
+						<li class="layui-nav-item">
+							<a class="side-active" href="javascript:;" data-id="125" data-href="fankui.html">反馈列表</a>
+
+						</li>
+
+						<li class="layui-nav-item">
+							<a class="" href="javascript:;">秒杀标题管理</a>
+							<dl class="layui-nav-child">
+
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="126" data-href="titleadd.html">新增秒杀标题</a>
+								</dd>
+								<dd>
+									<a class="side-active" href="javascript:;" data-id="127" data-href="titlelist.html">秒杀标题列表</a>
+								</dd>
+							</dl>
+						</li>
+
+					</ul>
+				</div>
+			</div>
+			<div class="layui-body">
+				<div class="layui-tab layui-bg-gray" lay-filter="iframe-tab" lay-allowclose="true" style="margin:0;">
+					<ul class="layui-tab-title">
+						<li class="layui-this" lay-allowclose="false">首页</li>
+					</ul>
+					<div class="layui-tab-content layui-iframe" style="padding:0;">
+						<div class="layui-tab-item layui-show">
+							<iframe frameborder="0" src="happy.html" class="tab-iframe"></iframe>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-footer">
+
+			</div>
+		</div>
+		<script src="layui/layui.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/common.js"></script>
+		<script>
+			var layer;
+			$(function() {
+				$(".userName").text(localStorage.getItem("userName"));
+				layui.use(['element', 'layer'],
+					function() {
+						var $ = layui.jquery,
+							element = layui.element; //tab-iframe
+						layer = layui.layer; //tab-iframe
+						$('.side-active').on('click', function() {
+							var id = $(this).attr('data-id');
+							var title = $(this).html();
+							var url = $(this).attr('data-href');
+							//判断是否存在
+							for(var i = 0; i < $('.tab-iframe').length; i++) {
+								if($('.tab-iframe').eq(i).attr('src') == url) {
+									element.tabChange('iframe-tab', id);
+									return;
+								}
+							};
+							//新增一个Tab项
+							res = element.tabAdd('iframe-tab', {
+								title: $(this).html() //用于演示
+									,
+								content: '<iframe frameborder="0" src="' + url + '" class="tab-iframe"></iframe>',
+								id: id
+							})
+							element.tabChange('iframe-tab', id);
+						});
+						$(".changeuse").click(function() {
+							//页面层
+							layer.open({
+								type: 2,
+								title: '修改个人资料',
+								maxmin: true,
+								area: ['500px', '500px'],
+								content: 'changehoutaiuserInfo.html',
+							});
+
+						})
+						$(".changepwd").click(function() {
+							//页面层
+							layer.open({
+								type: 2,
+								title: '修改密码',
+								maxmin: true,
+								area: ['500px', '500px'],
+								content: 'changepwd.html',
+							});
+
+						})
+
+					});
+			})
+		</script>
+	</body>
+
+</html>

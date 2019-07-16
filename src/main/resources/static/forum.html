@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>帖子列表</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+		<style>
+			.layui-table-cell {
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>帖子列表</legend>
+			</fieldset>
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">帖子类型</label>
+						<div class="layui-input-inline">
+							<select name="quiz" lay-filter="type">
+								<option value=""></option>
+								<option value="1">已通过</option>
+								<option value="0">未通过</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">帖子标题</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="请输入帖子标题关键字" class="layui-input forum_name" onblur="getForumList();">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">用户名</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="请输入用户名" class="layui-input user_name" onblur="getForumList();">
+						</div>
+					</div>
+				</div>
+			</form>
+			<table class="layui-hide" id="test" lay-filter="demo"></table>
+			<div id="test1"></div>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layui/layui.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+				<a class="layui-btn layui-btn-xs" lay-event="edit">查看</a>
+			</script>
+			<script type="text/html" id="barDemo2">
+				<img src="{{d.user_headimg}}" />
+			</script>
+			<script>
+				var list;
+				var laypage;
+				var status;
+				var layer;
+				var form;
+				$(function() {
+					layui.use(['form', 'layer', 'laypage'],
+						function() {
+							form = layui.form;
+							layer = layui.layer;
+							laypage = layui.laypage;
+							getForumList();
+							form.on('select(type)', function(data) {
+								console.log(data.elem); //得到select原始DOM对象
+								console.log(data.value); //得到被选中的值
+								console.log(data.othis); //得到美化后的DOM对象
+								status = data.value;
+								getForumList();
+							});
+						})
+
+				})
+
+				function getForumList() {
+					$.ajax({
+						type: "POST", //提交方式 
+						url: baseurl + "/air/getForumList", //路径 
+						dataType: 'json',
+						data: {
+							forum_name: $(".forum_name").val(),
+							status: status,
+							user_name: $(".user_name").val(),
+						},
+						success: function(data) { //返回数据根据结果进行相应的处理 
+							console.log(data.data.list);
+							list = data.data.list;
+							layui.use('table', function() {
+								var table = layui.table;
+								//第一个实例
+								table.render({
+									elem: '#test',
+									id: 'testReload',
+									data: list, //数据接口
+									align: 'center',
+									cols: [
+										[{
+											field: 'forum_id',
+											title: 'ID',
+											width: 180,
+											align: 'center'
+										}, {
+											field: 'forum_name',
+											title: '帖子标题',
+											width: 200,
+											align: 'center'
+
+										}, {
+											field: 'user_id',
+											title: '用户ID',
+											width: 180,
+											align: 'center'
+
+										}, {
+											field: 'user_name',
+											title: '用户名',
+											width: 110,
+											align: 'center'
+										}, {
+											field: 'user_headimg',
+											title: '用户头像',
+											width: 150,
+											templet: '#barDemo2',
+											event: 'aaaa'
+										}, {
+											field: 'reward',
+											title: '打赏金币',
+											width: 120,
+											align: 'center'
+										}, {
+											field: 'zan',
+											title: '点赞数',
+											width: 90,
+											align: 'center'
+										}, {
+											field: 'dis_type',
+											title: '是否允许评论',
+											width: 130,
+											align: 'center',
+											templet: '#barDemo1',
+										}, {
+											field: 'dis_count',
+											title: '评论数',
+											width: 90,
+											align: 'center'
+										}, {
+											field: 'add_time',
+											title: '发布时间',
+											width: 180,
+											align: 'center'
+										}, {
+											title: '操作',
+											width: 120,
+											align: 'center',
+											toolbar: '#barDemo'
+										}]
+									]
+								});
+								laypage.render({
+									elem: 'test1',
+									count: data.data.total, //数据总数，从服务端得到
+									jump: function(obj, first) {
+										//obj包含了当前分页的所有参数，比如：
+										console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+										console.log(obj.limit); //得到每页显示的条数
+										//首次不执行
+										if(!first) {
+											//do something
+											$.ajax({
+												type: "POST", //提交方式 
+												url: baseurl + "/air/getForumList", //路径 
+												dataType: 'json',
+												data: {
+													forum_name: $(".forum_name").val(),
+													status: status,
+													user_name: $(".user_name").val(),
+													pageNum: obj.curr
+												}, //数据，这里使用的是Json格式进行传输 
+												success: function(data) {
+													if(data.meta.code == 200) {
+														table.reload('testReload', {
+															data: data.data.list
+														});
+													}
+												}
+											})
+										}
+									}
+								});
+								table.on('tool(demo)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+									var data = obj.data; //获得当前行数据
+									var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+									var tr = obj.tr; //获得当前行 tr 的DOM对象
+									var forum_id = obj.data.forum_id;
+
+									var user_headimg = obj.data.user_headimg;
+									if(layEvent === 'del') { //删除
+										layer.confirm('确定要删除吗',
+											function(index) {
+												$.ajax({
+													type: "POST", //提交方式 
+													url: baseurl + "/air/delfor", //路径 
+													dataType: 'json',
+													data: {
+														forum_id: forum_id,
+													}, //数据，这里使用的是Json格式进行传输 
+													success: function(data) { //返回数据根据结果进行相应的处理 
+														console.log(data.meta.code);
+														if(data.meta.code == 200) {
+															layer.msg('删除成功', {
+																icon: 1
+															});
+															obj.del();
+														} else if(data.meta.code == 102) {
+															layer.msg('删除失败', {
+																icon: 5
+															});
+														}
+													}
+												})
+											})
+
+									} else if(layEvent === 'edit') {
+										layer.open({
+											type: 2,
+											title: '查看帖子详情',
+											maxmin: true,
+											shadeClose: true, //点击遮罩关闭层
+											area: ['1100px', '700px'],
+											content: 'forumdatail.html?forum_id=' + forum_id,
+										});
+									} else if(layEvent === 'aaaa') {
+										layer.photos({
+											photos: {
+												"data": [ //相册包含的图片，数组格式
+													{
+														"alt": "用户头像",
+														"pid": 666, //图片id
+														"src": user_headimg, //原图地址
+														"thumb": user_headimg //缩略图地址
+													}
+												],
+											},
+											anim: 3 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+										});
+									}
+								});
+							});
+						}
+					});
+				}
+			</script>
+			<script type="text/html" id="barDemo1">
+				{{# if (d.dis_type=== "y") { }}
+				<span>允许评论</span> {{# } else { }}
+				<span>不允许评论</span> {{# } }}
+
+			</script>
+			<script type="text/html" id="barDemo3">
+				{{# if (d.status=== 0) { }}
+				<span>未通过</span> {{# } else { }}
+				<span>已通告</span> {{# } }}
+
+			</script>
+
+	</body>
+
+</html>

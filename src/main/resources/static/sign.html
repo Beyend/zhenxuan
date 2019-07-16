@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>签到礼物设置</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+		<style>
+			.sp {
+				width: 150px;
+				height: 150px;
+			}
+			
+			.tp {
+				width: 100px;
+				height: 100px;
+			}
+			
+			.layui-table-cell {
+				height: auto;
+			}
+			
+			.noOb {
+				display: block;
+				width: 80%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>7天签到礼物设置</legend>
+			</fieldset>
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">礼物名称</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 7dayliwu">
+						</div>
+					</div>
+
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">获奖人数</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 7num">
+						</div>
+					</div>
+					<div class="layui-inline" style=" margin-left: 50px; ">
+						<button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="7save"> 保存</button>
+					</div>
+				</div>
+
+			</form>
+
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>14天签到礼物设置</legend>
+			</fieldset>
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">礼物名称</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 14dayliwu">
+						</div>
+					</div>
+
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">获奖人数</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 14num">
+						</div>
+					</div>
+					<div class="layui-inline" style=" margin-left: 50px; ">
+						<button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="14save"> 保存</button>
+					</div>
+				</div>
+
+			</form>
+
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>21天签到礼物设置</legend>
+			</fieldset>
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">礼物名称</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 21dayliwu">
+						</div>
+					</div>
+
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">获奖人数</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 21num">
+						</div>
+					</div>
+					<div class="layui-inline" style=" margin-left: 50px; ">
+						<button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="21save"> 保存</button>
+					</div>
+				</div>
+
+			</form>
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>28天签到礼物设置</legend>
+			</fieldset>
+			<form class="layui-form">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">礼物名称</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 28dayliwu">
+						</div>
+					</div>
+
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">获奖人数</label>
+						<div class="layui-input-block">
+							<input type="text" autocomplete="off" placeholder="" class="layui-input 28num">
+						</div>
+					</div>
+					<div class="layui-inline" style=" margin-left: 50px; ">
+						<button type="button" class="layui-btn layui-btn-lg layui-btn-normal" id="28save"> 保存</button>
+					</div>
+				</div>
+
+			</form>
+
+			<table class="layui-hide" id="test" lay-filter="demo"></table>
+			<div id="test1"></div>
+			<script type="text/javascript" src="js/jquery.min.js"></script>
+			<script src="js/common.js"></script>
+			<script src="layui/layui.js"></script>
+			<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+			<script type="text/html" id="barDemo">
+				<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="refuse">删除</a>
+			</script>
+
+			<script>
+				$(function() {
+					var forum_id = getQueryString("forum_id");
+					layui.use(['form', 'layer', 'laypage'],
+						function() {
+							var form = layui.form;
+							layer = layui.layer;
+							$.ajax({
+								type: "POST", //提交方式 
+								url: baseurl + "/setting/getSettingInfo", //路径 
+								dataType: 'json',
+								data: {
+									setid: "1",
+								}, //数据，这里使用的是Json格式进行传输 
+								success: function(data) {
+									if(data.meta.code == 200) {
+										$(".7dayliwu").val(data.data.liwu);
+										$(".7num").val(data.data.num)
+									}
+								}
+							})
+							$.ajax({
+								type: "POST", //提交方式 
+								url: baseurl + "/setting/getSettingInfo", //路径 
+								dataType: 'json',
+								data: {
+									setid: "2",
+								}, //数据，这里使用的是Json格式进行传输 
+								success: function(data) {
+									if(data.meta.code == 200) {
+										$(".14dayliwu").val(data.data.liwu);
+										$(".14num").val(data.data.num)
+									}
+								}
+							})
+							$.ajax({
+								type: "POST", //提交方式 
+								url: baseurl + "/setting/getSettingInfo", //路径 
+								dataType: 'json',
+								data: {
+									setid: "3",
+								}, //数据，这里使用的是Json格式进行传输 
+								success: function(data) {
+									if(data.meta.code == 200) {
+										$(".21dayliwu").val(data.data.liwu);
+										$(".21num").val(data.data.num)
+									}
+								}
+							})
+							$.ajax({
+								type: "POST", //提交方式 
+								url: baseurl + "/setting/getSettingInfo", //路径 
+								dataType: 'json',
+								data: {
+									setid: "4",
+								}, //数据，这里使用的是Json格式进行传输 
+								success: function(data) {
+									if(data.meta.code == 200) {
+										$(".28dayliwu").val(data.data.liwu);
+										$(".28num").val(data.data.num)
+									}
+								}
+							})
+						})
+
+					$("#7save").click(function() {
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/setting/changeSetting", //路径 
+							dataType: 'json',
+							data: {
+								setid: "1",
+								liwu: $(".7dayliwu").val(),
+								type: "1",
+								num: $(".7num").val(),
+							}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) {
+								if(data.meta.code == 200) {
+									layer.msg('保存成功', {
+										icon: 1
+									});
+								} else {
+									layer.msg('保存失败', {
+										icon: 5
+									});
+								}
+							}
+						})
+					})
+					$("#14save").click(function() {
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/setting/changeSetting", //路径 
+							dataType: 'json',
+							data: {
+								setid: "2",
+								liwu: $(".14dayliwu").val(),
+								type: "2",
+								num: $(".14num").val(),
+							}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) {
+								if(data.meta.code == 200) {
+									layer.msg('保存成功', {
+										icon: 1
+									});
+								} else {
+									layer.msg('保存失败', {
+										icon: 5
+									});
+								}
+							}
+						})
+					})
+					$("#21save").click(function() {
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/setting/changeSetting", //路径 
+							dataType: 'json',
+							data: {
+								setid: "3",
+								liwu: $(".21dayliwu").val(),
+								type: "3",
+								num: $(".21num").val(),
+							}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) {
+								if(data.meta.code == 200) {
+									layer.msg('保存成功', {
+										icon: 1
+									});
+								} else {
+									layer.msg('保存失败', {
+										icon: 5
+									});
+								}
+							}
+						})
+					})
+					$("#28save").click(function() {
+						$.ajax({
+							type: "POST", //提交方式 
+							url: baseurl + "/setting/changeSetting", //路径 
+							dataType: 'json',
+							data: {
+								setid: "4",
+								liwu: $(".28dayliwu").val(),
+								type: "4",
+								num: $(".28num").val(),
+							}, //数据，这里使用的是Json格式进行传输 
+							success: function(data) {
+								if(data.meta.code == 200) {
+									layer.msg('保存成功', {
+										icon: 1
+									});
+								} else {
+									layer.msg('保存失败', {
+										icon: 5
+									});
+								}
+							}
+						})
+					})
+
+				})
+			</script>
+
+	</body>
+
+</html>

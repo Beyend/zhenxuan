@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<title>添加商品</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="static/css/style.css">
+	</head>
+	<style>
+		.img {
+			width: 92px;
+			height: 92px;
+			padding-left: 10px;
+		}
+		
+		.daxiao {
+			width: 150px;
+			height: 150px;
+		}
+		
+		.color {
+			color: red;
+			position: absolute;
+			top: -7px;
+			left: 140px;
+		}
+		
+		.fengmiana {
+			position: absolute;
+			color: #FFFFFF;
+			background-color: rgba(0, 0, 0, 0.2);
+			padding: 2px 4px;
+			font-size: 14px;
+		}
+		
+		.seekfengmiana {
+			position: absolute;
+			color: #FFFFFF;
+			background-color: rgba(0, 0, 0, 0.5);
+			padding: 2px 4px;
+			bottom: 0px;
+			right: 0px;
+			font-size: 14px;
+		}
+		
+		.tupian {
+			padding-top: 5px;
+		}
+	</style>
+
+	<body>
+		<div class="container">
+			<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+				<legend>查看商品图片</legend>
+			</fieldset>
+
+			<form class="layui-form" style="margin-top: 100px;" id="formone">
+
+			</form>
+
+		</div>
+		<script type="text/javascript " src="js/jquery.min.js "></script>
+		<script src="js/common.js "></script>
+		<script src="layui/layui.js "></script>
+		<script src="layer-v3.1.1/layer/mobile/layer.js"></script>
+		<script>
+			var goodslogo = getQueryString("goodslogo");
+			console.log(goodslogo)
+			$(function() {
+				layui.use(['element', 'form', "upload"], function() {
+					var $ = layui.jquery,
+						element = layui.element;
+					var upload = layui.upload;
+					var list = goodslogo.split(",");
+					for(var i = 0; i < list.length-1; i++) {
+						$("#formone").append("<img class='daxiao' src='"+list[i]+"'>")
+					}
+				})
+			})
+		</script>
+	</body>
+
+</html>
